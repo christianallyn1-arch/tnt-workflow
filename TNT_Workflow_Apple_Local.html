@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>TNT Guide 2.0 - Apple Version</title>
+  <style>
+    :root {
+      --bg: #111827;
+      --card: #1f2937;
+      --text: #f9fafb;
+      --muted: #9ca3af;
+      --accent: #22c55e;
+      --button: #2563eb;
+      --danger: #ef4444;
+      --border: #374151;
+      --warning: #f59e0b;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      margin: 0;
+      padding: 8px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      height: 100dvh;
+      overflow: hidden;
+    }
+
+    .app {
+      max-width: 560px;
+      height: calc(100dvh - 16px);
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    h1 { text-align: center; font-size: 21px; margin: 4px 0 3px; }
+    .subtitle { text-align: center; color: var(--muted); margin-bottom: 6px; font-size: 12px; }
+
+    .card {
+      background: var(--card);
+      border-radius: 18px;
+      padding: 12px;
+      margin-bottom: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    }
+
+    .current-card { flex: 0 0 auto; }
+    .list-card { flex: 1 1 auto; min-height: 80px; overflow: hidden; display: flex; flex-direction: column; }
+
+    .progress { color: var(--muted); font-size: 14px; margin-bottom: 6px; }
+    .bar { height: 10px; background: var(--border); border-radius: 999px; overflow: hidden; margin-bottom: 8px; }
+    .bar-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.25s ease; }
+
+    .pill { display: inline-block; background: #111827; color: var(--muted); border-radius: 999px; padding: 4px 8px; font-size: 12px; margin-bottom: 6px; }
+    .current-label { color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+    .step-title { font-size: 21px; font-weight: bold; line-height: 1.25; margin-bottom: 6px; }
+
+    .why { display: none; color: #d1d5db; background: #111827; border-left: 4px solid var(--button); padding: 12px; border-radius: 8px; margin: 12px 0; font-size: 14px; line-height: 1.45; white-space: pre-line; }
+    .note { color: #fde68a; background: #111827; border-left: 4px solid var(--warning); padding: 12px; border-radius: 8px; margin: 12px 0; font-size: 14px; line-height: 1.45; }
+
+    button { width: 100%; border: none; border-radius: 14px; padding: 12px; font-size: 15px; font-weight: bold; color: white; background: var(--button); margin-top: 6px; cursor: pointer; transition: opacity 0.1s; }
+    button:active { opacity: 0.7; }
+    button.secondary { background: var(--border); }
+    button.success { background: var(--accent); }
+    button.danger { background: var(--danger); }
+    button.warning { background: var(--warning); color: #111827; }
+
+    .bottom-actions { flex: 0 0 auto; background: var(--bg); padding: 10px 20px 42px; position: sticky; bottom: 0; z-index: 5; border-top: 1px solid var(--border); }
+    .top-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
+    #backBtn { display: none; }
+    .choices { display: grid; gap: 6px; }
+    .two-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+
+    .step-list { margin-top: 6px; overflow-y: auto; padding-right: 4px; flex: 1 1 auto; min-height: 0; }
+    .step-row { display: flex; align-items: flex-start; gap: 6px; padding: 7px; border-bottom: 1px solid var(--border); color: var(--muted); font-size: 14px; }
+    .step-row.done { color: var(--text); }
+    .step-row.active { background: #111827; border-radius: 10px; color: var(--text); font-weight: bold; }
+    .status { min-width: 26px; }
+    .time, .answer { display: block; color: var(--muted); font-size: 12px; margin-top: 3px; font-weight: normal; }
+    .answer { color: #fde68a; }
+
+    .splash-screen { position: fixed; inset: 0; background: var(--bg); color: var(--text); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 18px; }
+    .splash-card { max-width: 560px; width: 100%; background: var(--card); border-radius: 20px; padding: 22px; box-shadow: 0 12px 32px rgba(0,0,0,0.4); text-align: center; border: 1px solid var(--border); }
+    .splash-warning { color: #fecaca; font-size: 26px; font-weight: 900; margin-bottom: 18px; text-transform: uppercase; line-height: 1.1; }
+    .splash-text { color: #e5e7eb; font-size: 16px; line-height: 1.45; margin-bottom: 18px; }
+
+    /* Initial App Load Splash (Logo) */
+    #loadingSplash {
+      position: fixed; inset: 0; background: var(--bg); z-index: 10000;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #loadingSplash img { max-width: 300px; max-height: 300px; object-fit: contain; }
+
+    @media (max-width: 420px) {
+      .step-title { font-size: 19px; }
+      .splash-warning { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Logo Splash -->
+  <div id="loadingSplash">
+    <img src="data:image/png;base64,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) center no-repeat;
+    background-size: contain;
+  </div>
+
+  <!-- Safety Warning Splash -->
+  <div class="splash-screen" id="splashScreen" style="display:none;">
+    <div class="splash-card">
+      <div class="splash-warning">DO NOT USE THIS APP WHILE DRIVING!!</div>
+      <div class="splash-text">
+        This app is an independent training tool designed to help new Prime Inc. TNT drivers master their daily workflows.
+      </div>
+      <button class="success" onclick="closeSplash()">I Understand</button>
+    </div>
+  </div>
+
+  <main class="app">
+    <h1>Driver Workflow Guide</h1>
+    <div class="subtitle">TNT Guide 2.0</div>
+    <div class="top-controls single">
+      <button class="secondary" id="backBtn" onclick="goBackOneStep()">← Back</button>
+    </div>
+
+    <section class="card current-card">
+      <div class="progress" id="progressText">Choose workflow</div>
+      <div class="bar"><div class="bar-fill" id="barFill"></div></div>
+      <div id="workflowArea"></div>
+    </section>
+
+    <section class="card list-card">
+      <strong>Step List</strong>
+      <div class="step-list" id="stepList"></div>
+    </section>
+
+    <div class="bottom-actions">
+        <button class="danger" onclick="resetWorkflow()">Reset</button>
+    </div>
+  </main>
+
+  <script>
+    const weightWhy = `Before departing, verify that all axle weights are legal.
+
+Legal maximum weights:
+• Steer Axle: 12,000 lbs
+• Drive Tandems: 34,000 lbs
+• Trailer Tandems: 34,000 lbs
+• Gross Vehicle Weight: 80,000 lbs
+
+If any axle group exceeds its legal limit, the load must be adjusted before departure.`;
+
+    const repairStep = {
+      title: "Does trailer need repair?",
+      type: "yesNo",
+      yesNote: "Fill out Road Assist information on Prime App.",
+      why: "If the trailer is not in good repair, Road Assist information needs to be completed in the Prime App before moving on.",
+      launchApp: true
+    };
+
+    const claimStep = {
+      title: "Is there a claim?",
+      type: "yesNo",
+      yesNote: "Fill out claim information on Prime App.",
+      why: "If there is a claim, the claim information needs to be completed in the Prime App before moving on.",
+      launchApp: true
+    };
+
+    const startSteps = [
+      {
+        title: "Choose workflow",
+        type: "workflowChoice",
+        why: "Determine what task the Trainee is starting."
+      }
+    ];
+
+    const shipperCommon = [
+      { title: "Confirm appointment time", why: "Make sure the appointment time matches the dispatch/load information." },
+      { title: "Upon arrival place yourself in an On Duty status", why: "Move off the Drive Line to an On-duty status before beginning shipper activities." },
+      { title: "Send Macro 1 (Arrival)", why: "Macro 1 confirms arrival at the shipper." },
+      { title: "Check in with shipper", why: "Check-in lets the shipper know you are on site." },
+      { title: "Determine load type", type: "shipperChoice", why: "The next steps depend on whether this is a Drop & Hook or a Live Load." }
+    ];
+
+    const shipperDropHook = [
+      { title: "Drop empty trailer to assigned location", why: "Drop the empty trailer at the assigned location before sending Macro 55." },
+      { title: "Send Macro 55 (Trailer Drop)", why: "Confirms the trailer you arrived with has been dropped." },
+      { title: "Locate assigned pickup trailer", why: "Find the correct trailer before inspecting or sending pickup information." },
+      { title: "Inspect trailer", why: "Check trailer condition before accepting it." },
+      repairStep,
+      { title: "Send Macro 41 (Trailer Pickup)", why: "Confirms the new trailer has been picked up." },
+      { title: "Confirm load weight is legal", why: weightWhy },
+      { title: "Place lock on trailer", why: "Secure the trailer with a lock before sending weight information and departing." },
+      { title: "Send Macro 42 (Weights)", why: "Reports the verified weights." },
+      { title: "Send Macro 3 (Depart Shipper)", why: "Confirms you are leaving the shipper." },
+      { title: "Stamp bills", why: "Stamp the bills before scanning the shipper documents." },
+      { title: "Scan shipper documents", why: "Capture the shipper paperwork with the Phone or Tablet." },
+      { title: "Make Live Load Call", why: "Final call to confirm the shipper process is complete." }
+    ];
+
+    const shipperLiveLoad = [
+      { title: "Back into assigned dock door", why: "Dock at the door assigned by the shipper." },
+      { title: "Secure trailer for loading", why: "Confirm the trailer is secured before loading begins." },
+      { title: "Send Macro 2 (Bump Dock)", why: "Confirms you are backed into the dock and ready to be loaded." },
+      { title: "Place yourself in Off Duty status", why: "After bumping the dock and sending Macro 2, move to Off Duty while waiting to be loaded." },
+      { title: "Wait for loading completion", why: "Do not move to weight checks until loading is complete." },
+      { title: "Check weights", why: "Get weight information before confirming legality." },
+      { title: "Confirm load weight is legal", why: weightWhy },
+      { title: "Place lock on trailer", why: "Secure the trailer with a lock before sending weight information and departing." },
+      { title: "Send Macro 42 (Weights)", why: "Reports the verified weights." },
+      { title: "Send Macro 3 (Depart Shipper)", why: "Confirms you are leaving the shipper." },
+      { title: "Stamp bills", why: "Stamp the bills before scanning the shipper documents." },
+      { title: "Scan shipper documents", why: "Capture the shipper paperwork with the Phone or Tablet." },
+      { title: "Make Live Load Call", why: "Final call to confirm the shipper process is complete." }
+    ];
+
+    const receiverCommon = [
+      { title: "Confirm receiver appointment time", why: "Make sure the receiver appointment time matches the load information." },
+      { title: "Upon arrival place yourself in an On Duty status", why: "Move off the Drive Line to an On-duty status before beginning receiver activities." },
+      { title: "Send Macro 1 (Arrival)", why: "Macro 1 confirms arrival at the receiver." },
+      { title: "Check in with receiver", why: "Let the receiver know you are on site and ready for delivery instructions." },
+      { title: "Determine unload type", type: "receiverChoice", why: "The next steps depend on whether this is a Live Unload or a Drop & Hook." }
+    ];
+
+    const receiverLiveUnload = [
+      { title: "Obtain door assignment", why: "Get the correct dock door or unloading instructions." },
+      { title: "Back into assigned dock door", why: "Only back into the door assigned by the receiver." },
+      { title: "Confirm trailer is secured for unloading", why: "Confirm the trailer is properly secured before unloading begins." },
+      { title: "Send Macro 2 (At Door/Bump Dock)", why: "Confirms you are backed into the dock for unloading." },
+      { title: "Place yourself in Off Duty status", why: "After bumping the dock and sending Macro 2, move to Off Duty while waiting to be unloaded." },
+      { title: "Wait for unloading", why: "Remain available until unloading is complete." },
+      { title: "Receive unloading completion notification", why: "Do not pull away until the receiver confirms unloading is complete, and you have your bills in hand or are instructed to pull out." },
+      { title: "Collect signed paperwork", why: "Get the required signed delivery documents before leaving." },
+      { title: "Verify paperwork is complete", why: "Check signatures, dates, trailer/load information, and notes. If multiple Bills, Each must be signed." },
+      { title: "Verify trailer is empty", why: "Confirm the trailer is fully empty before departing the receiver. Product left on the trailer is a claim even if the receiver says nothing about it." },
+      claimStep,
+      { title: "Send Macro 4 (Depart Receiver)", why: "Confirms you are departing the receiver." },
+      { title: "Stamp bills", why: "Stamp the bills before sending in bills and paperwork." },
+      { title: "Send in bills and paperwork", why: "Submit the required delivery paperwork after sending Macro 4." },
+      { title: "Depart customer", why: "Leave the customer safely after all receiver steps are complete." },
+      { title: "Place lock on trailer", why: "Secure the trailer with a lock after departing the customer." },
+    ];
+
+    const receiverDropHook = [
+      { title: "Locate assigned drop location", why: "Find the exact area where the loaded trailer is supposed to be dropped." },
+      { title: "Drop loaded trailer", why: "Drop the loaded trailer only in the approved receiver location." },
+      { title: "Send Macro 55 (Trailer Drop)", why: "Confirms the trailer has been dropped at the receiver." },
+      { title: "Locate assigned empty trailer", why: "Find the empty trailer assigned by the receiver or company." },
+      { title: "Inspect empty trailer", why: "Check the empty trailer before accepting it." },
+      repairStep,
+      { title: "Send Macro 41 (Trailer Pickup)", why: "Confirms pickup of the empty or assigned trailer." },
+      { title: "Confirm you have received all paperwork", why: "Make sure all required receiver paperwork has been received before sending departure information. If multiple Bills, Each must be signed." },
+      { title: "Send Macro 4 (Depart Receiver)", why: "Confirms you are departing the receiver." },
+      { title: "Stamp bills", why: "Stamp the bills before sending in bills and paperwork." },
+      { title: "Send in bills and paperwork", why: "Submit the required delivery paperwork after sending Macro 4." },
+      { title: "Depart customer", why: "Leave the customer safely after all receiver steps are complete." },
+      { title: "Place lock on trailer", why: "Secure the trailer with a lock after departing the customer." },
+    ];
+
+    const fuelingProcedures = [
+      { title: "Review fuel solution", why: "Check the assigned fuel stop and instructions before fueling." },
+      { title: "Confirm which fuels to get", why: "Verify whether you need tractor diesel, reefer fuel, DEF, or any combination listed in the fuel solution." },
+      { title: "Gather fueling information", why: "Have truck number, trailer number, and trip/load number ready. Also have your driver ID/fuel card to hand." },
+      { title: "Fuel truck if required", why: "Fuel the truck only if required by the fuel solution or dispatch instructions." },
+      { title: "Fuel DEF if required", why: "Fuel DEF only if required by the fuel solution or dispatch instructions." },
+      { title: "Fuel reefer if required", why: "If hauling a reefer trailer, add reefer fuel *before* the reefer reaches 1/4 tank. Always top the reefer before dropping the trailer." },
+      { title: "Verify receipt information", why: "Check that gallons, fuel type, location, date/time, truck, and trailer information are correct." },
+      { title: "Submit or retain receipt", why: "Follow company procedure for scanning, uploading, or keeping the fuel receipt." }
+    ];
+
+    const repowerLoads = [
+      { title: "Confirm repower instructions", why: "Verify load number, meeting location, trailer numbers, seal numbers, timing, and who you are repowering with." },
+      { title: "Meet the other driver safely", why: "Use the approved location and park safely before exchanging trailers." },
+      { title: "Exchange all paperwork", why: "Make sure bills, permits, scale tickets, receipts, seal information, and any load documents are exchanged before trailers are moved." },
+      { title: "Drop current trailer", why: "Drop the trailer you are giving to the other driver in the agreed location." },
+      { title: "Send Macro 55 (Trailer Drop)", why: "Confirms the trailer has been dropped during the repower." },
+      { title: "Pickup new trailer", why: "Hook to the trailer you are receiving from the other driver." },
+      { title: "Send Macro 41 (Trailer Pickup)", why: "Confirms pickup of the new trailer during the repower." },
+      { title: "Switch lock to new trailer", why: "Move your lock from the dropped trailer to the new trailer you are taking." },
+      { title: "Inspect new trailer", why: "Check tires, lights, seal, damage, registration, paperwork, and load security before leaving." },
+      repairStep,
+      { title: "Confirm paperwork and trailer match", why: "Verify trailer number, seal number, load number, destination, and paperwork all match the repowered load." },
+      { title: "Depart repower location", why: "Leave only after trailer, lock, paperwork, and macros are complete." }
+    ];
+
+    const emergencyStopping = [
+      {
+        title: "If possible, pull out of the lanes of traffic",
+        note: "If you cannot pull out of the lanes of traffic, contact local authorities immediately.",
+        why: "Move the vehicle out of active traffic lanes if it is safe and possible to do so. If you cannot pull out of the lanes of traffic, contact local authorities immediately so they can assist with traffic control and safety."
+      },
+      {
+        title: "Leave marker lights and 4-ways on",
+        why: "Keep marker lights and hazard lights on so other drivers can see the truck and trailer."
+      },
+      {
+        title: "Place red reflective triangles",
+        why: "Place your red reflective triangles out at the appropriate distances as required by DOT regulations."
+      },
+      {
+        title: "Contact Fleet Manager and Road Assist",
+        why: "Use the Prime Mobile App to reach out to your Fleet Manager and Road Assist to communicate the issue or issues."
+      },
+      {
+        title: "Stay in your truck until assistance arrives",
+        why: "Remain in the truck unless it is unsafe to do so. Wait for assistance to arrive."
+      }
+    ];
+
+    let mainWorkflow = null, branchType = null, currentIndex = 0, completed = [];
+
+    function getSteps() {
+      if (!mainWorkflow) return startSteps;
+      if (mainWorkflow === "fueling") return fuelingProcedures;
+      if (mainWorkflow === "repower") return repowerLoads;
+      if (mainWorkflow === "emergency") return emergencyStopping;
+      if (mainWorkflow === "shipper" && !branchType) return shipperCommon;
+      if (mainWorkflow === "shipper") return shipperCommon.concat(branchType === "drop" ? shipperDropHook : shipperLiveLoad);
+      if (mainWorkflow === "receiver" && !branchType) return receiverCommon;
+      if (mainWorkflow === "receiver") return receiverCommon.concat(branchType === "drop" ? receiverDropHook : receiverLiveUnload);
+      return startSteps;
+    }
+
+    function render() {
+      const steps = getSteps();
+      const area = document.getElementById("workflowArea");
+      const list = document.getElementById("stepList");
+      const progressText = document.getElementById("progressText");
+      const barFill = document.getElementById("barFill");
+      const backBtn = document.getElementById("backBtn");
+
+      backBtn.style.display = mainWorkflow ? "block" : "none";
+      const total = steps.length, doneCount = completed.length;
+      progressText.textContent = doneCount >= total ? "Workflow Complete" : `Step ${currentIndex + 1} of ${total}`;
+      barFill.style.width = `${Math.round((doneCount / total) * 100)}%`;
+
+      if (doneCount >= total) {
+        area.innerHTML = `<div class="complete-screen"><div class="big">🏁</div><h2>Workflow Complete</h2><p>All required steps were completed in order.</p></div>`;
+      } else {
+        const step = steps[currentIndex];
+        const label = getWorkflowLabel();
+        if (step.type === "workflowChoice") {
+          area.innerHTML = `<span class="pill">${label}</span><div class="current-label">Current Step</div><div class="step-title">${step.title}</div><button class="secondary" onclick="toggleWhy()">Why?</button><div class="why" id="whyBox">${step.why}</div><div class="choices"><button onclick="chooseMainWorkflow('shipper')">Shipper Workflow</button><button onclick="chooseMainWorkflow('receiver')">Receiver Workflow</button><button onclick="chooseMainWorkflow('fueling')">Fueling Procedures</button><button onclick="chooseMainWorkflow('repower')">Repowering Loads</button><button onclick="chooseMainWorkflow('emergency')">Emergency Stopping</button></div>`;
+        } else if (step.type === "shipperChoice" || step.type === "receiverChoice") {
+          const l1 = "Drop & Hook";
+          const l2 = step.type === "shipperChoice" ? "Live Load" : "Live Unload";
+          area.innerHTML = `<span class="pill">${label}</span><div class="current-label">Current Step</div><div class="step-title">${step.title}</div><button class="secondary" onclick="toggleWhy()">Why?</button><div class="why" id="whyBox">${step.why}</div><div class="choices"><button onclick="chooseBranch('drop')">${l1}</button><button onclick="chooseBranch('live')">${l2}</button></div>`;
+        } else if (step.type === "yesNo") {
+          area.innerHTML = `<span class="pill">${label}</span><div class="current-label">Decision Step</div><div class="step-title">${step.title}</div><button class="secondary" onclick="toggleWhy()">Why?</button><div class="why" id="whyBox">${step.why}</div><div class="note">If YES: ${step.yesNote}</div><div class="two-buttons"><button class="warning" onclick="completeYesNo('Yes', '${step.yesNote.replace(/'/g, "\\'")}')">Yes</button><button class="success" onclick="completeYesNo('No', '')">No</button></div>`;
+        } else {
+          area.innerHTML = `<span class="pill">${label}</span><div class="current-label">Current Step</div><div class="step-title">${step.title}</div>${step.note ? `<div class="note">${step.note}</div>` : ""}<button class="secondary" onclick="toggleWhy()">Why?</button><div class="why" id="whyBox">${step.why}</div><button class="success" onclick="completeStep()">Complete Step</button>`;
+        }
+      }
+
+      list.innerHTML = "";
+      steps.forEach((step, i) => {
+        const row = document.createElement("div");
+        row.className = `step-row ${i < completed.length ? 'done' : ''} ${i === currentIndex && completed.length < steps.length ? 'active' : ''}`;
+        const answer = completed[i] && completed[i].answer ? `<span class="answer">${completed[i].answer}${completed[i].note ? " — " + completed[i].note : ""}</span>` : "";
+        row.innerHTML = `<div class="status">${i < completed.length ? '✅' : (i === currentIndex ? '⬜' : '🔒')}</div><div>${step.title}${answer}</div>`;
+        list.appendChild(row);
+      });
+    }
+
+    function getWorkflowLabel() {
+      if (mainWorkflow === "shipper") return branchType ? `Shipper • ${branchType === 'drop' ? 'Drop & Hook' : 'Live Load'}` : "Shipper";
+      if (mainWorkflow === "receiver") return branchType ? `Receiver • ${branchType === 'drop' ? 'Drop & Hook' : 'Live Unload'}` : "Receiver";
+      if (mainWorkflow === "fueling") return "Fueling Procedures";
+      if (mainWorkflow === "repower") return "Repowering Loads";
+      if (mainWorkflow === "emergency") return "Emergency Stopping";
+      return "Start";
+    }
+
+    function chooseMainWorkflow(type) { mainWorkflow = type; branchType = null; currentIndex = 0; completed = []; saveState(); render(); }
+    function chooseBranch(type) { branchType = type; completeStep(); }
+    function completeStep() { const steps = getSteps(); completed.push({ title: steps[currentIndex].title, time: new Date().toLocaleString() }); currentIndex++; saveState(); render(); }
+    function completeYesNo(answer, note) {
+      const steps = getSteps(); const currentStep = steps[currentIndex];
+      completed.push({ title: currentStep.title, answer: answer, note: answer === "Yes" ? note : "", time: new Date().toLocaleString() });
+      currentIndex++; saveState(); render();
+      if (answer === "Yes" && currentStep.launchApp) launchPrimeApp();
+    }
+
+    function launchPrimeApp() {
+      window.location.href = "primemobile://";
+      setTimeout(() => { alert("Attempting to open Prime Mobile app..."); }, 500);
+    }
+
+    function toggleWhy() { const box = document.getElementById("whyBox"); box.style.display = box.style.display === "block" ? "none" : "block"; }
+    function goBackOneStep() { if (!confirm("Go back?")) return; completed.pop(); currentIndex = Math.max(0, currentIndex - 1); if ((mainWorkflow === "shipper" || mainWorkflow === "receiver") && currentIndex < 5) branchType = null; saveState(); render(); }
+    function resetWorkflow() {
+      const steps = getSteps();
+      const isComplete = currentIndex >= steps.length;
+      if (!isComplete && !confirm("Reset this workflow?")) return;
+      mainWorkflow = null; branchType = null; currentIndex = 0; completed = []; saveState(); render();
+    }
+    function closeSplash() { document.getElementById("splashScreen").style.display = "none"; }
+    function triggerSafetyWarning() { document.getElementById("splashScreen").style.display = "flex"; }
+    function saveState() { localStorage.setItem("driverWorkflowAppleV2", JSON.stringify({ mainWorkflow, branchType, currentIndex, completed })); }
+    function loadState() {
+      const saved = localStorage.getItem("driverWorkflowAppleV2");
+      if (saved) { const state = JSON.parse(saved); mainWorkflow = state.mainWorkflow; branchType = state.branchType; currentIndex = state.currentIndex || 0; completed = state.completed || []; }
+    }
+
+    window.onfocus = function() { triggerSafetyWarning(); };
+
+    window.onload = function() {
+      loadState();
+      render();
+      // Correct sequence: Show logo for 2s, then show safety warning (persistent)
+      setTimeout(() => {
+        document.getElementById("loadingSplash").style.display = "none";
+        triggerSafetyWarning();
+      }, 2000);
+    };
+  </script>
+</body>
+</html>
